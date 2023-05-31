@@ -7,18 +7,12 @@ public class Menu : MonoBehaviour
 {
     [SerializeField] private Slider _slider;
 
-    private float _sliderValue = 1;
-    private float _playerHealth = 0;
-    private float _currentHealth = 0;
-    private float _changeValue = 10;
-    private float _minHealth = 0;
-    private float _maxHealth = 100;
-    private float _multFactor = 15f;
+    private Player _player;
 
     private void Awake()
     {
-        _slider.value = _currentHealth;
-        _slider.value = _playerHealth;
+        _player = GetComponent<Player>();
+        _slider.value = _player.PlayerHealth / _player.MaxHealth;
     }
 
     private void Update()
@@ -26,26 +20,9 @@ public class Menu : MonoBehaviour
         UpdateHealthBar();
     }
 
-    public void TakeDamage()
-    {
-        if (_currentHealth > _minHealth)
-        {
-            _currentHealth -= _changeValue;
-        }
-    }
-
-    public void Heal()
-    {
-        if (_currentHealth < _maxHealth)
-        {
-            _currentHealth += _changeValue;
-        }
-    }
-
     private void UpdateHealthBar()
     {
-        _playerHealth = Mathf.MoveTowards(_playerHealth, _currentHealth, _multFactor * Time.deltaTime);
-        _sliderValue = _playerHealth / _maxHealth;
-        _slider.value = _sliderValue;
+        _slider.value = _player.PlayerHealth / _player.MaxHealth;
+        Debug.Log(_slider.value);
     }
 }
