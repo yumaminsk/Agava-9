@@ -3,26 +3,38 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(Player))]
 public class Menu : MonoBehaviour
 {
     [SerializeField] private Slider _slider;
 
     private Player _player;
+    private float _playerHealth = 0;
+    private float _targetHealth = 0;
+    private float _multFactor = 15f;
 
     private void Awake()
     {
         _player = GetComponent<Player>();
-        _slider.value = _player.PlayerHealth / _player.MaxHealth;
+        _player.HealthChanged += ChangeTarget;
     }
 
-    private void Update()
+    private void ChangeTarget(float playerHealth)
     {
-        UpdateHealthBar();
+        _targetHealth = playerHealth;
+
+        StopCoroutine(UpdateSlider());
+        StartCoroutine(UpdateSlider());
     }
 
-    private void UpdateHealthBar()
+    IEnumerator UpdateSlider()
     {
-        _slider.value = _player.PlayerHealth / _player.MaxHealth;
-        Debug.Log(_slider.value);
+        while(_playerHealth != _targetHealth)
+        {
+            _playerHealth = Mathf.MoveTowards(_playerHealth, _targetHealth, _multFactor * Time.deltaTime);
+            _slider.value = _playerHealth / _player.MaxHealth;
+
+            yield return new WaitForEndOfFrame();
+        }
     }
 }
